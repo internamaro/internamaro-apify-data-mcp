@@ -275,10 +275,18 @@ export const ACTOR_TOOLS: ActorTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "datasetIds": {
+          "type": "array",
+          "title": "Datasets to flatten",
+          "description": "Apify datasets with nested items, for example the results of scraper runs (up to 100). You can paste dataset IDs or URLs. Rows of all datasets go to one output dataset; with more than one dataset each row gets a _source column with its dataset ID. Use one kind of source: datasets, a JSON URL or pasted JSON.",
+          "items": {
+            "type": "string"
+          }
+        },
         "datasetId": {
           "type": "string",
-          "title": "Dataset to flatten",
-          "description": "An Apify dataset with nested items, for example the results of a scraper run. You can paste a dataset ID or URL. Use one source: a dataset, a JSON URL or pasted JSON."
+          "title": "Or one dataset",
+          "description": "Same as Datasets to flatten, for a single dataset ID or URL (kept for existing tasks and API calls). Can be combined with the list."
         },
         "jsonUrl": {
           "type": "string",
@@ -347,10 +355,18 @@ export const ACTOR_TOOLS: ActorTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "fileUrls": {
+          "type": "array",
+          "title": "File URLs (CSV, TSV, JSON or NDJSON)",
+          "description": "Public http(s) links to the files to filter, one per line (up to 100 files, each up to 500 MB; JSON arrays up to 150 MB). The matching rows of all files go to one dataset; with more than one file each row gets a _source column with its file URL. Use files OR an Apify dataset.",
+          "items": {
+            "type": "string"
+          }
+        },
         "fileUrl": {
           "type": "string",
-          "title": "File URL (CSV, TSV, JSON or NDJSON)",
-          "description": "Public http(s) link to the file to filter (up to 500 MB; JSON arrays up to 150 MB, NDJSON has no extra limit). Use this OR an Apify dataset."
+          "title": "Or one file URL",
+          "description": "Same as File URLs, for a single link (kept for existing tasks and API calls). Can be combined with File URLs."
         },
         "datasetId": {
           "type": "string",
@@ -539,10 +555,18 @@ export const ACTOR_TOOLS: ActorTool[] = [
     "inputSchema": {
       "type": "object",
       "properties": {
+        "fileUrls": {
+          "type": "array",
+          "title": "File URLs (.xlsx, or .json / .ndjson)",
+          "description": "Public http(s) links, one per line (up to 50 files, each up to 100 MB). An Excel file (.xlsx) becomes JSON rows plus a .json file; a JSON or NDJSON file becomes an Excel file. With more than one file, each dataset row gets a _source field with its file URL.",
+          "items": {
+            "type": "string"
+          }
+        },
         "fileUrl": {
           "type": "string",
-          "title": "File URL (.xlsx, or .json / .ndjson)",
-          "description": "Public http(s) link to the file, up to 100 MB. An Excel file (.xlsx) becomes JSON; a JSON or NDJSON file becomes Excel."
+          "title": "Or one file URL",
+          "description": "Same as File URLs, for a single link (kept for existing tasks and API calls). Can be combined with File URLs."
         },
         "sheet": {
           "type": "string",
@@ -560,7 +584,133 @@ export const ACTOR_TOOLS: ActorTool[] = [
         "fileName": {
           "type": "string",
           "title": "Output file name",
-          "description": "Start of the output file name, for example 'prices' gives prices.json or prices.xlsx. Empty = taken from the source file name."
+          "description": "Start of the output file name, for example 'prices' gives prices.json or prices.xlsx. Empty = taken from the source file name. With several files, -2, -3 ... is added when names would repeat."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "clean_google_maps_leads",
+    "title": "Clean Google Maps Leads",
+    "actorId": "ucchiii/maps-leads-cleaner",
+    "storeUrl": "https://apify.com/ucchiii/maps-leads-cleaner",
+    "description": "Returns one item per kept lead with name, category, phone (E.164), website, domain, address, rating, reviews and the source place id. Reads the dataset of a Google Maps scraper run (it does not scrape Google Maps itself), removes duplicate and closed places, normalizes phone numbers and websites, and filters by rating, reviews, category, website or phone. Give at least one of: datasetIds. Runs the Apify Actor ucchiii/maps-leads-cleaner on YOUR Apify account (APIFY_TOKEN); you pay that Actor's pay-per-event price, see https://apify.com/ucchiii/maps-leads-cleaner.",
+    "anyOf": [
+      "datasetIds"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "datasetIds": {
+          "type": "array",
+          "title": "Google Maps datasets",
+          "description": "Dataset IDs (the 'defaultDatasetId' of a finished run of the source Actor, e.g. 'WkzbQMuFYuamGv3YF'). Datasets from your Google Maps scraper runs (e.g. compass/crawler-google-places). Several runs are merged and deduplicated.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludeClosed": {
+          "type": "boolean",
+          "title": "Remove closed places",
+          "description": "Drop places marked permanently or temporarily closed.",
+          "default": true
+        },
+        "requireWebsite": {
+          "type": "boolean",
+          "title": "Only places with a website",
+          "description": "Keep only leads that have a website.",
+          "default": false
+        },
+        "requirePhone": {
+          "type": "boolean",
+          "title": "Only places with a valid phone",
+          "description": "Keep only leads whose phone number could be validated.",
+          "default": false
+        },
+        "minRating": {
+          "type": "number",
+          "title": "Minimum rating",
+          "description": "Keep places with at least this star rating. Allowed range 0 to 5 (maximum 5). Empty = no rating filter.",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "minReviews": {
+          "type": "integer",
+          "title": "Minimum number of reviews",
+          "description": "Keep places with at least this many reviews. Minimum 0. Empty = no filter.",
+          "minimum": 0
+        },
+        "categoriesInclude": {
+          "type": "array",
+          "title": "Categories to keep",
+          "description": "Keep places whose category contains any of these words (e.g. ['dentist', 'restaurant']). Empty = all.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "categoriesExclude": {
+          "type": "array",
+          "title": "Categories to remove",
+          "description": "Remove places whose category contains any of these words.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "defaultCountry": {
+          "type": "string",
+          "title": "Default country for phones",
+          "description": "Two-letter country code used to read local phone numbers when the place has no country (e.g. 'US', 'GB')."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "google_maps_review_insights",
+    "title": "Google Maps Review Insights",
+    "actorId": "ucchiii/reviews-insights",
+    "storeUrl": "https://apify.com/ucchiii/reviews-insights",
+    "description": "Returns one item per place with review count, average stars, star distribution, recent averages, monthly trend, owner response rate and top positive and negative terms; lowSample is true under 20 reviews. Reads the dataset of a Google Maps reviews scraper run (it does not scrape Google Maps itself) and turns thousands of reviews into one insight row per place. Give at least one of: datasetIds. Runs the Apify Actor ucchiii/reviews-insights on YOUR Apify account (APIFY_TOKEN); you pay that Actor's pay-per-event price, see https://apify.com/ucchiii/reviews-insights.",
+    "anyOf": [
+      "datasetIds"
+    ],
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "datasetIds": {
+          "type": "array",
+          "title": "Google Maps reviews datasets",
+          "description": "Dataset IDs (the 'defaultDatasetId' of a finished run of the source Actor, e.g. 'WkzbQMuFYuamGv3YF'). Datasets from your Google Maps reviews scraper runs (e.g. compass/Google-Maps-Reviews-Scraper). Reviews are grouped by place.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "periodMonths": {
+          "type": "integer",
+          "title": "Trend period (months)",
+          "description": "Length of each trend bucket in months. 1 = monthly count and average rating, 3 = quarterly. Allowed range 1 to 12 (default 1).",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 12
+        },
+        "topTerms": {
+          "type": "integer",
+          "title": "Terms per list",
+          "description": "How many top positive and top negative words or two-word phrases to return for each place. Allowed range 0 to 100 (default 20); 0 returns no term lists.",
+          "default": 20,
+          "minimum": 0,
+          "maximum": 100
+        },
+        "stopwords": {
+          "type": "array",
+          "title": "Extra stop words",
+          "description": "Additional words to ignore in term analysis, such as the place name or brand (lowercase, e.g. ['starbucks', 'cafe']). Common English stop words are always ignored.",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [],

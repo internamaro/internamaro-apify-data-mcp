@@ -24,7 +24,7 @@ function mockFetch(status: number, body: unknown) {
 const ENV = { APIFY_TOKEN: 'test-user-token' };
 
 test('every tool mirrors an Actor and describes what it returns', () => {
-  assert.equal(ACTOR_TOOLS.length, 7);
+  assert.equal(ACTOR_TOOLS.length, 9);
   const names = new Set<string>();
   for (const t of ACTOR_TOOLS) {
     assert.match(t.actorId, /^ucchiii\/[a-z0-9-]+$/);
@@ -150,7 +150,7 @@ test('MCP protocol: list and call tools through a client', async () => {
   const client = new Client({ name: 'test', version: '0.0.0' });
   await client.connect(clientT);
   const { tools } = await client.listTools();
-  assert.equal(tools.length, 7);
+  assert.equal(tools.length, 9);
   const res = await client.callTool({ name: 'check_domain_availability', arguments: { domains: ['example.com'] } });
   const content = res.content as { type: string; text: string }[];
   assert.equal(JSON.parse(content[0].text)[0].available, false);

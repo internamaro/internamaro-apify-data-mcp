@@ -1,7 +1,8 @@
 # Internamaro Apify Data MCP
 
-An MCP server with seven data post-processing tools: HTML to Markdown, bulk HTTP requests,
-flatten JSON, filter rows, remove duplicates, Excel to JSON and domain availability.
+An MCP server with nine data post-processing tools: HTML to Markdown, bulk HTTP requests,
+flatten JSON, filter rows, remove duplicates, Excel to JSON, Google Maps leads cleaning,
+Google Maps review insights and domain availability.
 
 Each tool is a thin wrapper around one public Apify Actor published by
 [ucchiii](https://apify.com/ucchiii). A tool call starts one Actor run on **your own Apify
@@ -19,6 +20,8 @@ and returns the run's dataset items as JSON.
 | `filter_rows` | The rows of a CSV/TSV/JSON/NDJSON file or dataset that match your conditions | [ucchiii/filter-rows](https://apify.com/ucchiii/filter-rows) | $0.00003 per row read |
 | `remove_duplicates` | Merged Apify datasets without duplicate rows | [ucchiii/dataset-dedup-merge](https://apify.com/ucchiii/dataset-dedup-merge) | $0.0005 per output item |
 | `excel_to_json` | One JSON item per spreadsheet row (or a link to an .xlsx made from JSON) | [ucchiii/excel-to-json](https://apify.com/ucchiii/excel-to-json) | $0.00002 per converted row |
+| `clean_google_maps_leads` | One item per kept lead from a Google Maps scraper dataset: name, category, E.164 phone, website, domain, address, rating | [ucchiii/maps-leads-cleaner](https://apify.com/ucchiii/maps-leads-cleaner) | $0.0005 per cleaned lead |
+| `google_maps_review_insights` | One item per place from a Google Maps reviews dataset: review count, average stars, trend, owner response rate, top terms | [ucchiii/reviews-insights](https://apify.com/ucchiii/reviews-insights) | $0.005 per place |
 | `check_domain_availability` | One item per domain: available true/false/null, status, TLD | [ucchiii/domain-availability-api](https://apify.com/ucchiii/domain-availability-api) | $0.0015 per domain with a definite answer; unknown and invalid names free |
 
 The input fields of each tool mirror the Actor's input schema; see the Actor page for details.
