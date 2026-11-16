@@ -596,7 +596,7 @@ export const ACTOR_TOOLS: ActorTool[] = [
     "title": "Clean Google Maps Leads",
     "actorId": "ucchiii/maps-leads-cleaner",
     "storeUrl": "https://apify.com/ucchiii/maps-leads-cleaner",
-    "description": "Returns one item per kept lead with name, category, phone (E.164), website, domain, address, rating, reviews and the source place id. Reads the dataset of a Google Maps scraper run (it does not scrape Google Maps itself), removes duplicate and closed places, normalizes phone numbers and websites, and filters by rating, reviews, category, website or phone. Give at least one of: datasetIds. Runs the Apify Actor ucchiii/maps-leads-cleaner on YOUR Apify account (APIFY_TOKEN); you pay that Actor's pay-per-event price, see https://apify.com/ucchiii/maps-leads-cleaner.",
+    "description": "Returns one item per kept lead with name, category, phone (E.164), website, domain, address, rating, reviews and the source place ID. Reads the dataset of a Google Maps scraper run (it does not scrape Google Maps itself), removes duplicate and closed places, normalizes phone numbers and websites, and filters by rating, reviews, category, website or phone. Give at least one of: datasetIds. Runs the Apify Actor ucchiii/maps-leads-cleaner on YOUR Apify account (APIFY_TOKEN); you pay that Actor's pay-per-event price, see https://apify.com/ucchiii/maps-leads-cleaner.",
     "anyOf": [
       "datasetIds"
     ],
